@@ -1,0 +1,131 @@
+//
+//  WeatherMoodApp.swift
+//  WeatherMood
+//
+//  Created by Simone Marton on 09.10.2025.
+//
+
+import SwiftUI
+
+// MARK: - Environment
+struct Environment {
+    static func loadEnvFile() {
+        let path = "/Users/simonemarton/WeatherMood/wamood/wamood/.env"
+        guard FileManager.default.fileExists(atPath: path) else {
+            print("No .env file found")
+            return
+        }
+        
+        do {
+            let contents = try String(contentsOfFile: path, encoding: .utf8)
+            let lines = contents.components(separatedBy: .newlines)
+            
+            for line in lines {
+                let parts = line.components(separatedBy: "=")
+                if parts.count == 2 {
+                    let key = parts[0].trimmingCharacters(in: .whitespaces)
+                    let value = parts[1].trimmingCharacters(in: .whitespaces)
+                    setenv(key, value, 1)
+                }
+            }
+        } catch {
+            print("Error loading .env file: \(error)")
+        }
+    }
+}
+
+// MARK: - Models
+struct WeatherResponse: Codable {
+    let weather: [Weather]
+    let main: Main
+    let name: String
+}
+
+struct Weather: Codable {
+    let description: String
+    let icon: String
+}
+
+struct Main: Codable {
+    let temp: Double
+    let humidity: Int
+}
+
+// MARK: - Views
+public struct WeatherMainView: View {
+    @State private var weatherData: WeatherResponse?
+    @State private var errorMessage: String?
+    @State private var city: String = "Dej"
+    
+    public init() {}
+    
+    func fetchWeatherData() async {
+        guard let apiKey = ProcessInfo.processInfo.environment["API_KEY"] else {
+            errorMessage = "API key not found in .env file"
+            return
+        }
+        
+        let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(city)&appid=\(apiKey)&units=metric"
+        guard let url = URL(string: urlString) else {
+            errorMessage = "Invalid URL"
+            return
+        }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            weatherData = try JSONDecoder().decode(WeatherResponse.self, from: data)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+            weatherData = nil
+        }
+    }
+    
+    public var body: some View {
+        VStack(spacing: 20) {
+            TextField("Enter city", text: $city)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            Button("Get Weather") {
+                Task {
+                    await fetchWeatherData()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            
+            if let weather = weatherData {
+                VStack(spacing: 10) {
+                    Text(weather.name)
+                        .font(.title)
+                    
+                    if let firstWeather = weather.weather.first {
+                        Text(firstWeather.description.capitalized)
+                            .font(.headline)
+                    }
+                    
+                    Text(String(format: "%.1f°C", weather.main.temp))
+                        .font(.largeTitle)
+                    
+                    Text("Humidity: \(weather.main.humidity)%")
+                        .font(.subheadline)
+                }
+            }
+            
+            if let error = errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .padding()
+            }
+        }
+        .padding()
+        .onAppear {
+            Environment.loadEnvFile()
+        }
+    }
+}
+
+// MARK: - Preview
+#Preview {
+    WeatherMainView()
+}
