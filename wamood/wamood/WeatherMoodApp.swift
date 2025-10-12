@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-// MARK: - Environment
+
 struct Environment {
     static func loadEnvFile() {
-        let path = "/Users/simonemarton/WeatherMood/wamood/wamood/.env"
+        let path = "/Users/simonemarton/WeatherMood/.env"
         guard FileManager.default.fileExists(atPath: path) else {
             print("No .env file found")
             return
@@ -34,7 +34,7 @@ struct Environment {
     }
 }
 
-// MARK: - Models
+
 struct WeatherResponse: Codable {
     let weather: [Weather]
     let main: Main
@@ -51,11 +51,16 @@ struct Main: Codable {
     let humidity: Int
 }
 
-// MARK: - Views
+
+
+
+
+
+
 public struct WeatherMainView: View {
     @State private var weatherData: WeatherResponse?
     @State private var errorMessage: String?
-    @State private var city: String = "Dej"
+    @State private var city: String = ""
     
     public init() {}
     
@@ -81,6 +86,13 @@ public struct WeatherMainView: View {
         }
     }
     
+    func resetApp(){
+        weatherData = nil
+        errorMessage = nil
+        city = ""
+    }
+    
+    
     public var body: some View {
         VStack(spacing: 20) {
             TextField("Enter city", text: $city)
@@ -93,6 +105,12 @@ public struct WeatherMainView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            
+            Button("reset"){
+                resetApp()
+            }
+            .buttonStyle(.borderedProminent)
+            
             
             if let weather = weatherData {
                 VStack(spacing: 10) {
