@@ -52,15 +52,11 @@ struct Main: Codable {
 }
 
 
-
-
-
-
-
 public struct WeatherMainView: View {
     @State private var weatherData: WeatherResponse?
     @State private var errorMessage: String?
     @State private var city: String = ""
+    @State private var isButtonDisabled = true
     
     public init() {}
     
@@ -99,20 +95,25 @@ public struct WeatherMainView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
             
-            Button("Get Weather") {
-                Task {
-                    await fetchWeatherData()
+            
+            if weatherData == nil {
+                var isButtonDisabled = true
+                
+                if isButtonDisabled{
+                    Button("Get Weather") {
+                        Task {
+                            await fetchWeatherData()
+                            isButtonDisabled = false
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
             }
-            .buttonStyle(.borderedProminent)
             
-            Button("reset"){
-                resetApp()
-            }
-            .buttonStyle(.borderedProminent)
             
             
             if let weather = weatherData {
+                
                 VStack(spacing: 10) {
                     Text(weather.name)
                         .font(.title)
@@ -121,6 +122,11 @@ public struct WeatherMainView: View {
                         Text(firstWeather.description.capitalized)
                             .font(.headline)
                     }
+                    
+                    Button("reset"){
+                        resetApp()
+                    }
+                    .buttonStyle(.borderedProminent)
                     
                     Text(String(format: "%.1f°C", weather.main.temp))
                         .font(.largeTitle)
