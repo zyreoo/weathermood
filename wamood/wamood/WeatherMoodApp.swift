@@ -34,7 +34,6 @@ struct Environment {
     }
 }
 
-
 struct WeatherResponse: Codable {
     let weather: [Weather]
     let main: Main
@@ -52,14 +51,53 @@ struct Main: Codable {
 }
 
 
+struct YoutubePlaylist: Codable{
+    let playlistUrl: String
+    let name: String
+}
+
+
 public struct WeatherMainView: View {
     @State private var weatherData: WeatherResponse?
     @State private var errorMessage: String?
     @State private var city: String = ""
     @State private var isButtonDisabled = true
+    @State private var playlist: YoutubePlaylist?
     
     public init() {}
     
+    
+    func fetchYoutubeData(query:String) async{
+        
+        guard let apiKey = ProcessInfo.processInfo.environment["YOUTUBE_APIKEY"] else  {
+            errorMessage = "API KEY IS NOT FOUND"
+            return
+        }
+        
+        let urlString = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&type=playlist&maxResults=1&key=\(apiKey)"
+        
+        guard let url = URL(string: urlString) else{
+            errorMessage = "Invalid URL"
+            return
+        }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                
+                print("\n\(prettyString)")
+            } else {
+                print("Failed to parse JSON.")
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            print("Error: \(error)")
+        }
+    }
+ 
     func fetchWeatherData() async {
         guard let apiKey = ProcessInfo.processInfo.environment["API_KEY"] else {
             errorMessage = "API key not found in .env file"
@@ -98,43 +136,43 @@ public struct WeatherMainView: View {
             
             if weatherData == nil {
                 var isButtonDisabled = true
-                
-                if isButtonDisabled{
-                    Button("Get Weather") {
-                        Task {
-                            await fetchWeatherData()
-                            isButtonDisabled = false
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
             }
             
+            
+            Button("Fetch YouTube JSON") {
+                            Task {
+                                await fetchYoutubeData(query: "lofi beats")
+                            }
+                        }
             
             
             if let weather = weatherData {
-                
-                VStack(spacing: 10) {
-                    Text(weather.name)
-                        .font(.title)
                     
-                    if let firstWeather = weather.weather.first {
-                        Text(firstWeather.description.capitalized)
-                            .font(.headline)
+                    VStack(spacing: 10) {
+                        Text(weather.name)
+                            .font(.title)
+                        
+                        if let firstWeather = weather.weather.first {
+                            Text(firstWeather.description.capitalized)
+                                .font(.headline)
+                            
+                        }
+                        
+                        
+                        Button("reset"){
+                            resetApp()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Text(String(format: "%.1f°C", weather.main.temp))
+                            .font(.largeTitle)
+                        
+                        Text("Humidity: \(weather.main.humidity)%")
+                            .font(.subheadline)
+                        
                     }
-                    
-                    Button("reset"){
-                        resetApp()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    
-                    Text(String(format: "%.1f°C", weather.main.temp))
-                        .font(.largeTitle)
-                    
-                    Text("Humidity: \(weather.main.humidity)%")
-                        .font(.subheadline)
                 }
-            }
+            
             
             if let error = errorMessage {
                 Text(error)
@@ -142,6 +180,9 @@ public struct WeatherMainView: View {
                     .padding()
             }
         }
+        .frame(
+            minWidth: 100, maxWidth: 400,
+            minHeight: 100, maxHeight: 400)
         .padding()
         .onAppear {
             Environment.loadEnvFile()
