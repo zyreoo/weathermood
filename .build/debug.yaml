@@ -1,0 +1,58 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "WeatherMood-arm64-apple-macosx15.0-debug.module": ["<WeatherMood-arm64-apple-macosx15.0-debug.module>"]
+  "main": ["<WeatherMood-arm64-apple-macosx15.0-debug.module>"]
+  "test": ["<WeatherMood-arm64-apple-macosx15.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/simonemarton/WeatherMood/Sources/WeatherMood/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/simonemarton/WeatherMood/Sources/WeatherMood/WeatherMoodApp.swift","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/DerivedSources/resource_bundle_accessor.swift"]
+    outputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/sources"]
+    description: "Write auxiliary file /Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/sources"
+
+  "/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood_WeatherMood.bundle/Assets.xcassets":
+    tool: copy-tool
+    inputs: ["/Users/simonemarton/WeatherMood/Sources/WeatherMood/Assets.xcassets/"]
+    outputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood_WeatherMood.bundle/Assets.xcassets/"]
+    description: "Copying /Users/simonemarton/WeatherMood/Sources/WeatherMood/Assets.xcassets"
+
+  "/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"]
+    outputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+
+  "<WeatherMood-arm64-apple-macosx15.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/WeatherMoodApp.swift.o","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/resource_bundle_accessor.swift.o","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/Modules/WeatherMood.swiftmodule"]
+    outputs: ["<WeatherMood-arm64-apple-macosx15.0-debug.module>"]
+
+  "C.WeatherMood-arm64-apple-macosx15.0-debug.module":
+    tool: shell
+    inputs: ["/Users/simonemarton/WeatherMood/Sources/WeatherMood/WeatherMoodApp.swift","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/DerivedSources/resource_bundle_accessor.swift","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","<WeatherMood-arm64-apple-macosx15.0-debug.module-resources>","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/sources"]
+    outputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/WeatherMoodApp.swift.o","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/resource_bundle_accessor.swift.o","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/Modules/WeatherMood.swiftmodule"]
+    description: "Compiling Swift Module 'WeatherMood' (2 sources)"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","WeatherMood","-emit-dependencies","-emit-module","-emit-module-path","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/Modules/WeatherMood.swiftmodule","-output-file-map","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/output-file-map.json","-parse-as-library","-incremental","-c","@/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/sources","-I","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx13.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE","-module-cache-path","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-emit-objc-header","-emit-objc-header-path","/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/include/WeatherMood-Swift.h","-swift-version","5","-enable-upcoming-feature","BareSlashRegexLiterals","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","weathermood"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/simonemarton/WeatherMood/Sources/WeatherMood/","/Users/simonemarton/WeatherMood/Package.swift","/Users/simonemarton/WeatherMood/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+
+  "WeatherMood-arm64-apple-macosx15.0-debug.module-resources":
+    tool: phony
+    inputs: ["/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood_WeatherMood.bundle/Assets.xcassets/"]
+    outputs: ["<WeatherMood-arm64-apple-macosx15.0-debug.module-resources>"]
+

@@ -18,9 +18,11 @@ let package = Package(
         .target(
             name: "WeatherMood",
             dependencies: [],
-            path: "wamood/wamood",
             resources: [
                 .process("Assets.xcassets")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("BareSlashRegexLiterals")
             ]
         )
     ]
