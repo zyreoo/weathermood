@@ -68,7 +68,7 @@ public struct WeatherMainView: View {
     
     
     func fetchYoutubeData(query:String) async{
-        
+    
         guard let apiKey = ProcessInfo.processInfo.environment["YOUTUBE_APIKEY"] else  {
             errorMessage = "API KEY IS NOT FOUND"
             return
@@ -136,14 +136,15 @@ public struct WeatherMainView: View {
             
             if weatherData == nil {
                 var isButtonDisabled = true
-            }
-            
-            
-            Button("Fetch YouTube JSON") {
-                            Task {
-                                await fetchYoutubeData(query: "lofi beats")
-                            }
+                
+                if isButtonDisabled{
+                    Button("Get Weather"){
+                        Task{
+                            await fetchWeatherData()
                         }
+                    }
+                }
+            }
             
             
             if let weather = weatherData {
@@ -152,11 +153,26 @@ public struct WeatherMainView: View {
                         Text(weather.name)
                             .font(.title)
                         
+                        
                         if let firstWeather = weather.weather.first {
                             Text(firstWeather.description.capitalized)
                                 .font(.headline)
                             
                         }
+                        
+                        
+                        Button("Search a good playlist based on the weather mood"){
+                            Task{
+                                let query = "music " + (weather.weather.first?.description ?? "music")
+                                
+                                await fetchYoutubeData(query: query)
+                            }
+                        }
+                        
+//                        
+//                        Button("Get a quote based on your mode"){
+//
+//                        }
                         
                         
                         Button("reset"){
