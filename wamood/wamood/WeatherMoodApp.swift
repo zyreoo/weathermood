@@ -120,6 +120,11 @@ public struct WeatherMainView: View {
         }
     }
     
+    
+    func quoteSearch(word: String){
+        //this is the crazy think i m going to build i want to make a seach engine that is looking through each word that has a quote and it matches the words
+    }
+    
     func resetApp(){
         weatherData = nil
         errorMessage = nil
@@ -129,13 +134,16 @@ public struct WeatherMainView: View {
     
     public var body: some View {
         VStack(spacing: 20) {
-            TextField("Enter city", text: $city)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
             
             
             if weatherData == nil {
+                
+                TextField("Enter city", text: $city)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                
                 var isButtonDisabled = true
+                
                 
                 if isButtonDisabled{
                     Button("Get Weather"){
