@@ -1,3 +1,0 @@
-module WeatherMood {
-    header "/Users/simonemarton/WeatherMood/.build/arm64-apple-macosx/debug/WeatherMood.build/include/WeatherMood-Swift.h"
-}
